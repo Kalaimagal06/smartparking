@@ -1,0 +1,34 @@
+services:
+  - type: web
+    name: smart-parking-api
+    env: node
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: DATABASE_URL
+        value: file:./dev.db
+      - key: JWT_SECRET
+        generateValue: true
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: smart-parking-redis
+          property: connectionString
+
+  - type: redis
+    name: smart-parking-redis
+    plan: free
+
+  - type: web
+    name: smart-parking-client
+    env: static
+    plan: free
+    buildCommand: cd client && npm install && npm run build
+    staticPublishPath: ./client/dist
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: smart-parking-api
+          envVarKey: RENDER_EXTERNAL_URL
