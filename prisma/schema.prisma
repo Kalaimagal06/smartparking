@@ -1,0 +1,48 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int           @id @default(autoincrement())
+  name         String
+  email        String        @unique
+  password     String
+  role         String        @default("USER") // "USER" or "ADMIN"
+  reservations Reservation[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model ParkingSlot {
+  id           Int           @id @default(autoincrement())
+  slot_number  String        @unique
+  status       String        @default("AVAILABLE") // "AVAILABLE", "OCCUPIED", "RESERVED"
+  reservations Reservation[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model Reservation {
+  id           Int         @id @default(autoincrement())
+  user_id      Int
+  slot_id      Int
+  booking_date DateTime
+  start_time   DateTime
+  end_time     DateTime
+  status       String      @default("ACTIVE") // "ACTIVE", "EXPIRED", "COMPLETED", "CANCELLED"
+  expiry_time  DateTime?
+  
+  user         User        @relation(fields: [user_id], references: [id])
+  slot         ParkingSlot @relation(fields: [slot_id], references: [id])
+  
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+}
