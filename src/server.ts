@@ -15,8 +15,6 @@ import path from 'path';
 
 import cors from 'cors';
 
-// Import workers to start them
-import './jobs/workers';
 
 // Import routes
 import authRoutes from './routes/auth.routes';
@@ -39,15 +37,7 @@ app.use('/api/slots', slotRoutes);
 app.use('/api/reservations', reservationRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 
-import http from 'http';
-import { initSocket } from './socket';
-
 // Use error handler middleware
 app.use(errorHandler);
 
-const server = http.createServer(app);
-initSocket(server);
-
-server.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+export default app;

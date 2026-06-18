@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { PrismaClient } from '@prisma/client';
-import { addReservationJob } from '../jobs/queue';
-import { getIO } from '../socket';
+
 
 const prisma = new PrismaClient();
 
@@ -49,13 +48,6 @@ export const createReservation = async (req: AuthRequest, res: Response, next: N
                 data: { status: 'RESERVED' }
             })
         ]);
-
-        // Broadcast slot update via WebSocket
-        const io = getIO();
-        io.emit('slot_updated', updatedSlot);
-
-        // Queue expiration job for 2 hours
-        await addReservationJob('expireReservation', { reservationId: reservation.id, slotId: slot.id }, 2 * 60 * 60 * 1000);
 
         res.status(201).json({
             success: true,
@@ -117,10 +109,6 @@ export const cancelReservation = async (req: AuthRequest, res: Response): Promis
                 data: { status: 'AVAILABLE' }
             })
         ]);
-
-        const io = getIO();
-        io.emit('slot_updated', updatedSlot);
-        io.emit('reservation_cancelled', { reservationId: reservation.id, slotId: updatedSlot.id });
 
         res.json({
             success: true,

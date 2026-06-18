@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
 import { PrismaClient } from '@prisma/client';
-import { getIO } from '../socket';
 import { invalidateCache } from '../middleware/cache.middleware';
 
 const prisma = new PrismaClient();
@@ -37,9 +36,6 @@ export const updateSlotStatus = async (req: Request, res: Response, next: NextFu
       data: { status }
     });
 
-    // Broadcast the update to all connected clients
-    const io = getIO();
-    io.emit('slot_updated', updatedSlot);
 
     // Invalidate the cache for slots
     await invalidateCache('slots');
