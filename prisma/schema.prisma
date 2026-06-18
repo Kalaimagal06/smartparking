@@ -6,12 +6,12 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  id           Int           @id @default(autoincrement())
+  id           String        @id @default(auto()) @map("_id") @db.ObjectId
   name         String
   email        String        @unique
   password     String
@@ -22,7 +22,7 @@ model User {
 }
 
 model ParkingSlot {
-  id           Int           @id @default(autoincrement())
+  id           String        @id @default(auto()) @map("_id") @db.ObjectId
   slot_number  String        @unique
   status       String        @default("AVAILABLE") // "AVAILABLE", "OCCUPIED", "RESERVED"
   reservations Reservation[]
@@ -31,9 +31,9 @@ model ParkingSlot {
 }
 
 model Reservation {
-  id           Int         @id @default(autoincrement())
-  user_id      Int
-  slot_id      Int
+  id           String      @id @default(auto()) @map("_id") @db.ObjectId
+  user_id      String      @db.ObjectId
+  slot_id      String      @db.ObjectId
   booking_date DateTime
   start_time   DateTime
   end_time     DateTime

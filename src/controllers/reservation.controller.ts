@@ -7,7 +7,7 @@ const prisma = new PrismaClient();
 
 // In auth middleware, we injected `req.user`. We define a custom request type.
 interface AuthRequest extends Request {
-  user?: { id: number; email: string; role: string };
+  user?: { id: string; email: string; role: string };
 }
 
 export const createReservation = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
@@ -21,7 +21,7 @@ export const createReservation = async (req: AuthRequest, res: Response, next: N
         }
 
         // Verify slot is available
-        const slot = await prisma.parkingSlot.findUnique({ where: { id: parseInt(slotId, 10) } });
+        const slot = await prisma.parkingSlot.findUnique({ where: { id: slotId } });
         if (!slot || slot.status !== 'AVAILABLE') {
             res.status(400).json({ success: false, message: 'Slot is not available.' });
             return;
@@ -88,7 +88,7 @@ export const cancelReservation = async (req: AuthRequest, res: Response): Promis
 
         // Check if reservation exists and belongs to user
         const reservation = await prisma.reservation.findUnique({
-            where: { id: parseInt(id as string, 10) }
+            where: { id: id as string }
         });
 
         if (!reservation) {

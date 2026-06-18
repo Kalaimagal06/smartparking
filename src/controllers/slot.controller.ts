@@ -33,7 +33,7 @@ export const updateSlotStatus = async (req: Request, res: Response, next: NextFu
     const { status } = req.body; // 'AVAILABLE', 'OCCUPIED', 'RESERVED'
 
     const updatedSlot = await prisma.parkingSlot.update({
-      where: { id: parseInt(id as string, 10) },
+      where: { id: id as string },
       data: { status }
     });
 

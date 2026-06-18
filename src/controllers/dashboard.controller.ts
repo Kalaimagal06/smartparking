@@ -4,7 +4,7 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 interface AuthRequest extends Request {
-  user?: { id: number; email: string; role: string };
+  user?: { id: string; email: string; role: string };
 }
 
 export const getDashboardStats = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
